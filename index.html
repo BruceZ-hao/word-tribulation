@@ -188,6 +188,26 @@
   #profile-head .hero h3 {
     margin-bottom:6px;
   }
+  #account-panel {
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+    padding:14px 16px; border-radius:16px;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+  }
+  #account-meta {
+    display:flex; flex-direction:column; gap:4px;
+  }
+  #account-name {
+    color:#ffd700; font-size:20px; font-weight:700;
+  }
+  #account-hint {
+    color:#8ba7c6; font-size:13px;
+  }
+  #account-actions {
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
+  }
+  #account-actions .btn {
+    min-width:110px;
+  }
   #profile-chip-row {
     display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;
   }
@@ -720,6 +740,16 @@
               </div>
             </div>
           </div>
+          <div class="profile-panel" id="account-panel">
+            <div id="account-meta">
+              <div id="account-name">本地账号 -</div>
+              <div id="account-hint">当前浏览器内保存独立进度、设置与词库</div>
+            </div>
+            <div id="account-actions">
+              <button class="btn" id="switch-account-btn" type="button">切换账号</button>
+              <button class="btn" id="rename-account-btn" type="button">修改昵称</button>
+            </div>
+          </div>
           <div class="profile-panel">
             <div class="profile-panel-title">形象皮肤</div>
             <div id="skin-grid"></div>
@@ -978,9 +1008,11 @@ const REALMS = [
 
 let activeWords = WORDS.map(pool => pool.map(word => ({ ...word })));
 let activeDictionaryMeta = { source:'builtin', count:activeWords.reduce((sum, pool) => sum + pool.length, 0) };
-const DICT_STORAGE_KEY = 'cultivation-game-dictionary-v1';
-const SETTINGS_STORAGE_KEY = 'cultivation-game-settings-v1';
-const PROGRESS_STORAGE_KEY = 'cultivation-game-progress-v1';
+const ACCOUNT_INDEX_STORAGE_KEY = 'cultivation-game-account-index-v1';
+const ACTIVE_ACCOUNT_STORAGE_KEY = 'cultivation-game-active-account-v1';
+const DICT_STORAGE_KEY_BASE = 'cultivation-game-dictionary-v1';
+const SETTINGS_STORAGE_KEY_BASE = 'cultivation-game-settings-v1';
+const PROGRESS_STORAGE_KEY_BASE = 'cultivation-game-progress-v1';
 const DIFFICULTIES = [
   { id:'casual', name:'闲云', timerMul:1.3, rewardMul:0.75, penaltyMul:0.75, desc:'时间更宽松，奖励较低', color:'#8bc34a', glow:'rgba(139,195,74,0.34)', risk:'低压修炼' },
   { id:'normal', name:'常规', timerMul:1, rewardMul:1, penaltyMul:1, desc:'标准节奏，收益平衡', color:'#4fc3f7', glow:'rgba(79,195,247,0.34)', risk:'平衡历练' },
@@ -1061,6 +1093,9 @@ const attrPoints = document.getElementById('attr-points');
 const heroSkinName = document.getElementById('hero-skin-name');
 const bonusHp = document.getElementById('bonus-hp');
 const bonusStones = document.getElementById('bonus-stones');
+const accountName = document.getElementById('account-name');
+const switchAccountBtn = document.getElementById('switch-account-btn');
+const renameAccountBtn = document.getElementById('rename-account-btn');
 const beginAdventureBtn = document.getElementById('begin-adventure-btn');
 const homeSummaryDifficulty = document.getElementById('home-summary-difficulty');
 const homeSummaryRoute = document.getElementById('home-summary-route');
@@ -1192,6 +1227,124 @@ const G = {
   speakingLock:false,
   speechEnded:false,
 };
+
+let accountIndex = [];
+let activeAccountId = '';
+
+function slugifyAccountName(name) {
+  return String(name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 32);
+}
+
+function normalizeAccount(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const name = String(entry.name || '').trim();
+  const id = slugifyAccountName(entry.id || name);
+  if (!name || !id) return null;
+  return { id, name };
+}
+
+function saveAccountIndex() {
+  try {
+    localStorage.setItem(ACCOUNT_INDEX_STORAGE_KEY, JSON.stringify(accountIndex));
+    localStorage.setItem(ACTIVE_ACCOUNT_STORAGE_KEY, activeAccountId);
+  } catch (error) {
+    console.warn('Failed to persist account index', error);
+  }
+}
+
+function ensureAccountState() {
+  try {
+    const rawIndex = localStorage.getItem(ACCOUNT_INDEX_STORAGE_KEY);
+    const parsedIndex = rawIndex ? JSON.parse(rawIndex) : [];
+    accountIndex = Array.isArray(parsedIndex)
+      ? parsedIndex.map(normalizeAccount).filter(Boolean)
+      : [];
+  } catch (error) {
+    accountIndex = [];
+  }
+
+  if (!accountIndex.length) {
+    accountIndex = [{ id:'default', name:'本地账号' }];
+  }
+
+  const storedActiveId = String(localStorage.getItem(ACTIVE_ACCOUNT_STORAGE_KEY) || '');
+  activeAccountId = accountIndex.some(item => item.id === storedActiveId)
+    ? storedActiveId
+    : accountIndex[0].id;
+  saveAccountIndex();
+}
+
+function getActiveAccount() {
+  return accountIndex.find(item => item.id === activeAccountId) || accountIndex[0] || { id:'default', name:'本地账号' };
+}
+
+function getScopedStorageKey(baseKey) {
+  const account = getActiveAccount();
+  return `${baseKey}:${account.id}`;
+}
+
+function getProgressStorageKey() {
+  return getScopedStorageKey(PROGRESS_STORAGE_KEY_BASE);
+}
+
+function getSettingsStorageKey() {
+  return getScopedStorageKey(SETTINGS_STORAGE_KEY_BASE);
+}
+
+function getDictStorageKey() {
+  return getScopedStorageKey(DICT_STORAGE_KEY_BASE);
+}
+
+function syncAccountPanel() {
+  const account = getActiveAccount();
+  accountName.textContent = `本地账号 · ${account.name}`;
+}
+
+function switchLocalAccount() {
+  const current = getActiveAccount();
+  const options = accountIndex.map((item, index) => `${index + 1}. ${item.name}`).join('\n');
+  const answer = window.prompt(`输入账号序号切换，或输入新账号名创建：\n${options}`, current.name);
+  if (answer == null) return;
+  const value = String(answer).trim();
+  if (!value) return;
+
+  const index = Number(value);
+  if (Number.isInteger(index) && index >= 1 && index <= accountIndex.length) {
+    activeAccountId = accountIndex[index - 1].id;
+  } else {
+    const name = value.slice(0, 24);
+    const id = slugifyAccountName(name);
+    if (!id) return;
+    const existing = accountIndex.find(item => item.id === id || item.name === name);
+    if (existing) {
+      activeAccountId = existing.id;
+    } else {
+      const next = { id, name };
+      accountIndex.push(next);
+      activeAccountId = next.id;
+    }
+  }
+
+  saveAccountIndex();
+  location.reload();
+}
+
+function renameLocalAccount() {
+  const current = getActiveAccount();
+  const answer = window.prompt('输入新的本地账号昵称', current.name);
+  if (answer == null) return;
+  const name = String(answer).trim().slice(0, 24);
+  if (!name) return;
+  current.name = name;
+  accountIndex = accountIndex.map(item => item.id === current.id ? { ...item, name } : item);
+  saveAccountIndex();
+  syncAccountPanel();
+}
 
 const MISTAKE_MASTERY_TARGET = 2;
 const DAILY_TASKS = [
@@ -1627,7 +1780,7 @@ let lastProgressSaveAt = 0;
 function clearProgressStorage() {
   lastProgressSaveAt = 0;
   try {
-    localStorage.removeItem(PROGRESS_STORAGE_KEY);
+    localStorage.removeItem(getProgressStorageKey());
   } catch (error) {
     console.warn('Failed to clear progress', error);
   }
@@ -1664,7 +1817,7 @@ function saveProgressToStorage(force=false) {
   if (!force && now - lastProgressSaveAt < 900) return;
 
   try {
-    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(snapshot));
+    localStorage.setItem(getProgressStorageKey(), JSON.stringify(snapshot));
     lastProgressSaveAt = now;
   } catch (error) {
     console.warn('Failed to persist progress', error);
@@ -1693,18 +1846,18 @@ function applyImportedSave(payload) {
   let prevDict = null;
   let prevProgress = null;
   try {
-    prevSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    prevDict = localStorage.getItem(DICT_STORAGE_KEY);
-    prevProgress = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    prevSettings = localStorage.getItem(getSettingsStorageKey());
+    prevDict = localStorage.getItem(getDictStorageKey());
+    prevProgress = localStorage.getItem(getProgressStorageKey());
 
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(payload.settings || getSettingsSnapshot()));
+    localStorage.setItem(getSettingsStorageKey(), JSON.stringify(payload.settings || getSettingsSnapshot()));
     if (payload.dictionary && Array.isArray(payload.dictionary.pools)) {
-      localStorage.setItem(DICT_STORAGE_KEY, JSON.stringify(payload.dictionary));
+      localStorage.setItem(getDictStorageKey(), JSON.stringify(payload.dictionary));
     } else {
-      localStorage.removeItem(DICT_STORAGE_KEY);
+      localStorage.removeItem(getDictStorageKey());
     }
     if (hasProgress) {
-      localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload.progress));
+      localStorage.setItem(getProgressStorageKey(), JSON.stringify(payload.progress));
     }
   } catch (error) {
     throw new Error('浏览器未能写入导入存档');
@@ -1720,12 +1873,12 @@ function applyImportedSave(payload) {
   }
   if (hasProgress && !restoreProgressFromStorage()) {
     try {
-      if (prevSettings == null) localStorage.removeItem(SETTINGS_STORAGE_KEY);
-      else localStorage.setItem(SETTINGS_STORAGE_KEY, prevSettings);
-      if (prevDict == null) localStorage.removeItem(DICT_STORAGE_KEY);
-      else localStorage.setItem(DICT_STORAGE_KEY, prevDict);
-      if (prevProgress == null) localStorage.removeItem(PROGRESS_STORAGE_KEY);
-      else localStorage.setItem(PROGRESS_STORAGE_KEY, prevProgress);
+      if (prevSettings == null) localStorage.removeItem(getSettingsStorageKey());
+      else localStorage.setItem(getSettingsStorageKey(), prevSettings);
+      if (prevDict == null) localStorage.removeItem(getDictStorageKey());
+      else localStorage.setItem(getDictStorageKey(), prevDict);
+      if (prevProgress == null) localStorage.removeItem(getProgressStorageKey());
+      else localStorage.setItem(getProgressStorageKey(), prevProgress);
       restoreSettingsFromStorage();
       renderDifficultyOptions();
       applyDifficultyTheme();
@@ -1755,7 +1908,7 @@ function applyImportedSave(payload) {
 
 function restoreProgressFromStorage() {
   try {
-    const raw = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    const raw = localStorage.getItem(getProgressStorageKey());
     if (!raw) return false;
 
     const parsed = JSON.parse(raw);
@@ -1904,7 +2057,7 @@ function restoreProgressFromStorage() {
 
 function saveSettingsToStorage() {
   try {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({
+    localStorage.setItem(getSettingsStorageKey(), JSON.stringify({
       difficulty:G.difficulty,
       skin:G.skin,
       attributePoints:G.attributePoints,
@@ -1918,7 +2071,7 @@ function saveSettingsToStorage() {
 
 function restoreSettingsFromStorage() {
   try {
-    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    const raw = localStorage.getItem(getSettingsStorageKey());
     if (!raw) return;
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed.difficulty === 'string') {
@@ -2172,14 +2325,14 @@ function applyDifficultyTheme() {
 function saveDictionaryToStorage() {
   try {
     if (activeDictionaryMeta.source === 'builtin') {
-      localStorage.removeItem(DICT_STORAGE_KEY);
+      localStorage.removeItem(getDictStorageKey());
       return;
     }
     const payload = {
       source: activeDictionaryMeta.source,
       pools: activeWords,
     };
-    localStorage.setItem(DICT_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(getDictStorageKey(), JSON.stringify(payload));
   } catch (error) {
     console.warn('Failed to persist dictionary', error);
     msgBar.textContent = '⚠ 词库已导入，但浏览器未能保存到本地';
@@ -2193,7 +2346,7 @@ function restoreBuiltinDictionary() {
     count: flattenPools(activeWords).length,
   };
   try {
-    localStorage.removeItem(DICT_STORAGE_KEY);
+    localStorage.removeItem(getDictStorageKey());
   } catch (error) {
     console.warn('Failed to clear saved dictionary', error);
   }
@@ -2203,7 +2356,7 @@ function restoreBuiltinDictionary() {
 
 function restoreDictionaryFromStorage() {
   try {
-    const raw = localStorage.getItem(DICT_STORAGE_KEY);
+    const raw = localStorage.getItem(getDictStorageKey());
     if (!raw) return false;
     const parsed = JSON.parse(raw);
     if (!parsed || !Array.isArray(parsed.pools)) return false;
@@ -2640,6 +2793,7 @@ function hideResultOverlay() {
 function syncProfilePanel() {
   const diff = getDifficultyConfig();
   const remainHeartDemon = Math.max(0, G.heartDemonRequiredWins - G.heartDemonClearedWins);
+  syncAccountPanel();
   syncHeroHome();
   renderMistakeNotebook();
   renderDailyCultivation();
@@ -5075,6 +5229,12 @@ btBtn.addEventListener('click', () => {
 profileBtn.addEventListener('click', () => {
   openProfilePanel();
 });
+switchAccountBtn.addEventListener('click', () => {
+  switchLocalAccount();
+});
+renameAccountBtn.addEventListener('click', () => {
+  renameLocalAccount();
+});
 profileResumeBtn.addEventListener('click', () => {
   if (G.onboarding) {
     startGame();
@@ -5377,6 +5537,7 @@ window.addEventListener('beforeunload', () => {
 // start loop
 (async () => {
   resizeStage();
+  ensureAccountState();
   restoreSettingsFromStorage();
   ensureDailyState();
   renderDifficultyOptions();
@@ -5390,6 +5551,8 @@ window.addEventListener('beforeunload', () => {
   const restoredProgress = restoreProgressFromStorage();
   if (!restoredProgress) {
     openProfilePanel();
+  } else {
+    syncAccountPanel();
   }
   requestAnimationFrame(gameLoop);
 })();
