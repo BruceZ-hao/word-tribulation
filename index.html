@@ -155,6 +155,51 @@
   #word-review-speaker:active { transform:scale(0.95); }
   #word-review-meaning { font-size:24px; color:#f7f1d5; margin-bottom:6px; }
   #word-review-result { font-size:18px; margin-bottom:4px; }
+  #account-gate-overlay {
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(5,10,18,0.82); backdrop-filter:blur(8px); z-index:13; pointer-events:auto;
+  }
+  #account-gate-overlay.show { display:flex; }
+  #account-gate-card {
+    width:min(560px, calc(100% - 32px)); padding:28px 26px 24px; border-radius:22px;
+    background:linear-gradient(180deg,rgba(10,18,32,0.97),rgba(8,12,24,0.95));
+    border:1px solid rgba(255,215,0,0.22); box-shadow:0 28px 60px rgba(0,0,0,0.38);
+    color:#e7eef8;
+  }
+  #account-gate-card h3 {
+    font-size:28px; color:#ffd700; margin-bottom:10px;
+  }
+  #account-gate-sub {
+    color:#8ba7c6; font-size:14px; line-height:1.7; margin-bottom:16px;
+  }
+  #account-gate-list {
+    display:flex; flex-direction:column; gap:8px; margin-bottom:14px;
+    max-height:220px; overflow:auto;
+  }
+  .account-gate-item {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:10px 12px; border-radius:12px; cursor:pointer;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+  }
+  .account-gate-item:hover {
+    border-color:rgba(255,215,0,0.22); background:rgba(255,215,0,0.06);
+  }
+  .account-gate-name {
+    color:#fff; font-size:16px; font-weight:700;
+  }
+  .account-gate-tag {
+    color:#9be3ff; font-size:12px;
+  }
+  #account-gate-create {
+    display:flex; gap:10px; margin-top:8px;
+  }
+  #account-gate-input {
+    flex:1; padding:10px 12px; font-size:16px; border-radius:10px;
+    border:1px solid rgba(95,190,255,0.18); background:rgba(255,255,255,0.04); color:#fff; outline:none;
+  }
+  #account-gate-input:focus {
+    border-color:#ffd700; box-shadow:0 0 16px rgba(255,215,0,0.22);
+  }
   #profile-overlay {
     position:absolute; inset:0; display:none; align-items:center; justify-content:center;
     background:rgba(5,10,18,0.72); backdrop-filter:blur(6px); z-index:12; pointer-events:auto;
@@ -697,6 +742,17 @@
       <button class="btn" id="word-review-continue" style="background:linear-gradient(135deg,#0fa86d,#0b7f55);color:#fff;font-size:18px;padding:10px 36px;margin-top:12px;">⚔ 继续挑战</button>
     </div>
   </div>
+  <div id="account-gate-overlay">
+    <div id="account-gate-card">
+      <h3>选择本地账号</h3>
+      <div id="account-gate-sub">每个本地账号都会在当前浏览器里保存独立的进度、设置与词库。首次进入请先选择一个账号。</div>
+      <div id="account-gate-list"></div>
+      <div id="account-gate-create">
+        <input id="account-gate-input" type="text" maxlength="24" placeholder="输入新账号昵称">
+        <button class="btn" id="account-gate-create-btn" type="button">创建并进入</button>
+      </div>
+    </div>
+  </div>
   <div id="profile-overlay">
     <div id="profile-card">
       <div id="profile-head">
@@ -1010,6 +1066,7 @@ let activeWords = WORDS.map(pool => pool.map(word => ({ ...word })));
 let activeDictionaryMeta = { source:'builtin', count:activeWords.reduce((sum, pool) => sum + pool.length, 0) };
 const ACCOUNT_INDEX_STORAGE_KEY = 'cultivation-game-account-index-v1';
 const ACTIVE_ACCOUNT_STORAGE_KEY = 'cultivation-game-active-account-v1';
+const HAS_SEEN_ACCOUNT_GATE_STORAGE_KEY = 'cultivation-game-account-gate-seen-v1';
 const DICT_STORAGE_KEY_BASE = 'cultivation-game-dictionary-v1';
 const SETTINGS_STORAGE_KEY_BASE = 'cultivation-game-settings-v1';
 const PROGRESS_STORAGE_KEY_BASE = 'cultivation-game-progress-v1';
@@ -1062,6 +1119,10 @@ const resultSub = document.getElementById('result-sub');
 const resultContinue = document.getElementById('result-continue');
 const resultQuit = document.getElementById('result-quit');
 const resultBreakthroughBtn = document.getElementById('result-breakthrough-btn');
+const accountGateOverlay = document.getElementById('account-gate-overlay');
+const accountGateList = document.getElementById('account-gate-list');
+const accountGateInput = document.getElementById('account-gate-input');
+const accountGateCreateBtn = document.getElementById('account-gate-create-btn');
 const importDictBtn = document.getElementById('import-dict-btn');
 const resetDictBtn = document.getElementById('reset-dict-btn');
 const dictFileInput = document.getElementById('dict-file-input');
@@ -1303,6 +1364,56 @@ function getDictStorageKey() {
 function syncAccountPanel() {
   const account = getActiveAccount();
   accountName.textContent = `本地账号 - ${account.name}`;
+}
+
+function renderAccountGate() {
+  accountGateList.innerHTML = accountIndex.map((item) => `
+    <div class="account-gate-item" data-account-id="${item.id}">
+      <div class="account-gate-name">${escapeHtml(item.name)}</div>
+      <div class="account-gate-tag">${item.id === activeAccountId ? '当前账号' : '点击进入'}</div>
+    </div>
+  `).join('');
+}
+
+function openAccountGate() {
+  try {
+    localStorage.setItem(HAS_SEEN_ACCOUNT_GATE_STORAGE_KEY, '1');
+  } catch (error) {
+    console.warn('Failed to remember account gate state', error);
+  }
+  renderAccountGate();
+  accountGateInput.value = '';
+  accountGateOverlay.classList.add('show');
+  profileOverlay.classList.remove('show');
+  submitBtn.disabled = true;
+  input.disabled = true;
+  msgBar.textContent = '先选择一个本地账号，再开始修行。';
+  setTimeout(() => accountGateInput.focus(), 0);
+}
+
+function closeAccountGate() {
+  accountGateOverlay.classList.remove('show');
+}
+
+function createAccountFromGate() {
+  const name = String(accountGateInput.value || '').trim().slice(0, 24);
+  if (!name) {
+    accountGateInput.focus();
+    return;
+  }
+  const id = slugifyAccountName(name);
+  if (!id) return;
+  const existing = accountIndex.find(item => item.id === id || item.name === name);
+  if (existing) {
+    activeAccountId = existing.id;
+  } else {
+    const next = { id, name };
+    accountIndex.push(next);
+    activeAccountId = next.id;
+  }
+  saveAccountIndex();
+  closeAccountGate();
+  location.reload();
 }
 
 function switchLocalAccount() {
@@ -5235,6 +5346,23 @@ switchAccountBtn.addEventListener('click', () => {
 renameAccountBtn.addEventListener('click', () => {
   renameLocalAccount();
 });
+accountGateList.addEventListener('click', (e) => {
+  const item = e.target.closest('[data-account-id]');
+  if (!item) return;
+  activeAccountId = item.getAttribute('data-account-id') || activeAccountId;
+  saveAccountIndex();
+  closeAccountGate();
+  location.reload();
+});
+accountGateCreateBtn.addEventListener('click', () => {
+  createAccountFromGate();
+});
+accountGateInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    createAccountFromGate();
+  }
+});
 profileResumeBtn.addEventListener('click', () => {
   if (G.onboarding) {
     startGame();
@@ -5550,7 +5678,12 @@ window.addEventListener('beforeunload', () => {
   updateDictionaryStatus();
   const restoredProgress = restoreProgressFromStorage();
   if (!restoredProgress) {
-    openProfilePanel();
+    const hasSeenGate = localStorage.getItem(HAS_SEEN_ACCOUNT_GATE_STORAGE_KEY) === '1';
+    if (hasSeenGate) {
+      openProfilePanel();
+    } else {
+      openAccountGate();
+    }
   } else {
     syncAccountPanel();
   }
