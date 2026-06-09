@@ -1,0 +1,242 @@
+[
+  {
+    "w": "cat",
+    "p": "/k?t/",
+    "m": "?"
+  },
+  {
+    "w": "dog",
+    "p": "/d??/",
+    "m": "?"
+  },
+  {
+    "w": "sun",
+    "p": "/s?n/",
+    "m": "??"
+  },
+  {
+    "w": "door",
+    "p": "/d??r/",
+    "m": "?"
+  },
+  {
+    "w": "apple",
+    "p": "/??p.?l/",
+    "m": "??"
+  },
+  {
+    "w": "water",
+    "p": "/?w??.t?r/",
+    "m": "?"
+  },
+  {
+    "w": "music",
+    "p": "/?mju?.z?k/",
+    "m": "??"
+  },
+  {
+    "w": "stone",
+    "p": "/sto?n/",
+    "m": "??"
+  },
+  {
+    "w": "forest",
+    "p": "/?f?r.?st/",
+    "m": "??"
+  },
+  {
+    "w": "travel",
+    "p": "/?tr?v.?l/",
+    "m": "??"
+  },
+  {
+    "w": "flower",
+    "p": "/?fla?.?r/",
+    "m": "?"
+  },
+  {
+    "w": "planet",
+    "p": "/?pl?n.?t/",
+    "m": "??"
+  },
+  {
+    "w": "courage",
+    "p": "/?k?r.?d?/",
+    "m": "??"
+  },
+  {
+    "w": "rainbow",
+    "p": "/?re?n.bo?/",
+    "m": "??"
+  },
+  {
+    "w": "victory",
+    "p": "/?v?k.t?r.i/",
+    "m": "??"
+  },
+  {
+    "w": "journey",
+    "p": "/?d???.ni/",
+    "m": "??"
+  },
+  {
+    "w": "ancient",
+    "p": "/?e?n.??nt/",
+    "m": "???"
+  },
+  {
+    "w": "dragon",
+    "p": "/?dr??.?n/",
+    "m": "?"
+  },
+  {
+    "w": "phoenix",
+    "p": "/?fi?.n?ks/",
+    "m": "??"
+  },
+  {
+    "w": "mountain",
+    "p": "/?ma?n.t?n/",
+    "m": "?"
+  },
+  {
+    "w": "universe",
+    "p": "/?ju?.n?.v??rs/",
+    "m": "??"
+  },
+  {
+    "w": "knowledge",
+    "p": "/?n?l.?d?/",
+    "m": "??"
+  },
+  {
+    "w": "adventure",
+    "p": "/?d?ven.t??r/",
+    "m": "??"
+  },
+  {
+    "w": "celebration",
+    "p": "/?sel.??bre?.??n/",
+    "m": "??"
+  },
+  {
+    "w": "'hood",
+    "p": "hʊd",
+    "m": "n. 罩；风帽；（布质）面罩；学位连领帽（表示学位种类）\\nv. 覆盖；用头巾包；使(马,鹰等)戴头罩；给…加罩\\n[网络] 胡德；兜帽；引擎盖"
+  },
+  {
+    "w": "-gamy",
+    "p": "-ɡeimi",
+    "m": "表示：婚姻,性结合：polygamy; 具有...受精方式；具有...生殖器官：cleistogamy"
+  },
+  {
+    "w": "-gate",
+    "p": "geɪt",
+    "m": "n. 大门；出入口；门道\\nvt. 给…装大门\\nn. (Gate)人名；(英)盖特；(法、瑞典)加特"
+  },
+  {
+    "w": "-gen",
+    "p": "d'ʒen",
+    "m": "[医]〔词尾〕原, 剂：加到词干上指该词干表示的物体或状态产生的动因, 如过敏原(allergen), 冷冻剂(cryogen), 致病原(pathogen)"
+  },
+  {
+    "w": "-genetic",
+    "p": "dʒɪ'netɪk",
+    "m": "a. 遗传的；基因的；起源的"
+  },
+  {
+    "w": "butylbenzene",
+    "p": "-",
+    "m": "[化] 丁苯"
+  },
+  {
+    "w": "butylcellosolve",
+    "p": "-",
+    "m": "[化] 丁基溶纤剂; 乙二醇单丁醚"
+  },
+  {
+    "w": "butylcellusolve",
+    "p": ",bju:til'selә,sɔlv",
+    "m": "丁基溶纤剂, 乙二醇二丁醚"
+  },
+  {
+    "w": "butylchloral",
+    "p": "bjutil'klɔ:rәl",
+    "m": "丁氯醛"
+  },
+  {
+    "w": "inconsecutive",
+    "p": ".inkәn'sekjutiv",
+    "m": "a. 不连续的, 前后不连贯的"
+  },
+  {
+    "w": "inconsecutively",
+    "p": "inkәnˊsekjutivli",
+    "m": "adv. 不连续"
+  },
+  {
+    "w": "inconsequence",
+    "p": "in'kɒnsikwәns",
+    "m": "n. 不合理, 矛盾, 不切题"
+  },
+  {
+    "w": "inconsequent",
+    "p": "in'kɒnsikwәnt",
+    "m": "a. 不合理的, 矛盾的, 不切题的"
+  },
+  {
+    "w": "nite",
+    "p": "nait",
+    "m": "n. 夜间（等于night）"
+  },
+  {
+    "w": "niteflix",
+    "p": "-",
+    "m": "Dreams so complex in plot and rich in production value that they seem like feature length films.\\n> Wow! I had niteflix last night. The only thing missing were the end credits.\\n> I wonder if Steven Spielberg has niteflix.\\n"
+  },
+  {
+    "w": "nitella",
+    "p": "-",
+    "m": "n. 丽藻属\\n[网络] 尼他拉；尼特拉牌手表；黑轮藻属"
+  },
+  {
+    "w": "nitelleae",
+    "p": "-",
+    "m": "拟轮藻亚纲"
+  },
+  {
+    "w": "nitro-paraffin",
+    "p": "-",
+    "m": "[化] 硝基烷烃"
+  },
+  {
+    "w": "nitro-pentaerythrite",
+    "p": "-",
+    "m": "[化] 季戊四醇硝酸酯; 季戊四醇四硝酸酯"
+  },
+  {
+    "w": "nitro-powder",
+    "p": "-",
+    "m": "n. 硝化火药"
+  },
+  {
+    "w": "unshipp",
+    "p": "-",
+    "m": "v. 船上卸货;船客等下船;解下"
+  },
+  {
+    "w": "unshipped",
+    "p": "ʌn'ʃɪpt",
+    "m": "v. 从船上卸，解下，被卸下( unship的过去式和过去分词 )"
+  },
+  {
+    "w": "unshipping",
+    "p": "-",
+    "m": "从船上卸, 解下, 被卸下( unship的现在分词 )"
+  },
+  {
+    "w": "unships",
+    "p": "-",
+    "m": "从船上卸, 解下, 被卸下（unship的第三人称单数形式）"
+  }
+]
