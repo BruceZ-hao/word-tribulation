@@ -1070,6 +1070,57 @@ const HAS_SEEN_ACCOUNT_GATE_STORAGE_KEY = 'cultivation-game-account-gate-seen-v1
 const DICT_STORAGE_KEY_BASE = 'cultivation-game-dictionary-v1';
 const SETTINGS_STORAGE_KEY_BASE = 'cultivation-game-settings-v1';
 const PROGRESS_STORAGE_KEY_BASE = 'cultivation-game-progress-v1';
+const UI_TEXT = {
+  title:'修英语仙 - 英语闯关修仙',
+  result:{
+    defeat:'💀 击杀!',
+    continuePrompt:'是否继续闯关？',
+    continueBtn:'⚔ 继续闯关',
+    quitBtn:'🚪 退出',
+    wordPrefix:'单词:',
+    breakthroughBtn:'⚡ 发起渡劫',
+  },
+  review:{
+    speakerTitle:'点击听读音',
+    continueBtn:'⚔ 继续挑战',
+  },
+  accountGate:{
+    title:'选择本地账号',
+    subtitle:'每个本地账号都会在当前浏览器里保存独立的进度、设置与词库。首次进入请先选择一个账号。',
+    placeholder:'输入新账号昵称',
+    createBtn:'创建并进入',
+    current:'当前账号',
+    enter:'点击进入',
+    enterMsg:'先选择一个本地账号，再开始修行。',
+    switchPrompt:'输入账号序号切换，或输入新账号名创建：',
+    renamePrompt:'输入新的本地账号昵称',
+  },
+  profile:{
+    title:'个人中心',
+    subtitle:'查看当前修为、词库与突破状态',
+    realmChip:'境界 -',
+    difficultyChip:'难度 -',
+    stageChip:'状态 -',
+    localAccount:'本地账号 -',
+    localAccountHint:'当前浏览器内保存独立进度、设置与词库',
+    switchAccount:'切换账号',
+    renameAccount:'修改昵称',
+    startAdventure:'开始挑战',
+    route:'刷词 → BOSS → 渡劫',
+    style:'稳扎稳打',
+    currentSkin:'当前皮肤',
+    allocPoints:'可分配属性点',
+    hpBonus:'生命加成',
+    stoneBonus:'灵石加成',
+  },
+  battle:{
+    inputLabel:'⌨ 输入:',
+    inputPlaceholder:'输入单词...',
+    attackBtn:'⚔ 攻击!',
+    startBtn:'开始修仙',
+    profileBtn:'☯ 个人中心',
+  },
+};
 const DIFFICULTIES = [
   { id:'casual', name:'闲云', timerMul:1.3, rewardMul:0.75, penaltyMul:0.75, desc:'时间更宽松，奖励较低', color:'#8bc34a', glow:'rgba(139,195,74,0.34)', risk:'低压修炼' },
   { id:'normal', name:'常规', timerMul:1, rewardMul:1, penaltyMul:1, desc:'标准节奏，收益平衡', color:'#4fc3f7', glow:'rgba(79,195,247,0.34)', risk:'平衡历练' },
@@ -1366,11 +1417,43 @@ function syncAccountPanel() {
   accountName.textContent = `本地账号 - ${account.name}`;
 }
 
+function applyStaticUIText() {
+  document.title = UI_TEXT.title;
+  resultTitle.textContent = UI_TEXT.result.defeat;
+  resultSub.textContent = UI_TEXT.result.continuePrompt;
+  resultContinue.textContent = UI_TEXT.result.continueBtn;
+  resultQuit.textContent = UI_TEXT.result.quitBtn;
+  resultBreakthroughBtn.textContent = UI_TEXT.result.breakthroughBtn;
+  document.getElementById('word-review-speaker').title = UI_TEXT.review.speakerTitle;
+  document.getElementById('word-review-continue').textContent = UI_TEXT.review.continueBtn;
+  document.querySelector('#account-gate-card h3').textContent = UI_TEXT.accountGate.title;
+  document.getElementById('account-gate-sub').textContent = UI_TEXT.accountGate.subtitle;
+  accountGateInput.placeholder = UI_TEXT.accountGate.placeholder;
+  accountGateCreateBtn.textContent = UI_TEXT.accountGate.createBtn;
+  document.querySelector('#profile-head h3').textContent = UI_TEXT.profile.title;
+  document.getElementById('profile-subtitle').textContent = UI_TEXT.profile.subtitle;
+  profileChipRealm.textContent = UI_TEXT.profile.realmChip;
+  profileChipDifficulty.textContent = UI_TEXT.profile.difficultyChip;
+  profileChipStage.textContent = UI_TEXT.profile.stageChip;
+  document.getElementById('account-name').textContent = UI_TEXT.profile.localAccount;
+  document.getElementById('account-hint').textContent = UI_TEXT.profile.localAccountHint;
+  switchAccountBtn.textContent = UI_TEXT.profile.switchAccount;
+  renameAccountBtn.textContent = UI_TEXT.profile.renameAccount;
+  beginAdventureBtn.textContent = UI_TEXT.profile.startAdventure;
+  homeSummaryRoute.textContent = UI_TEXT.profile.route;
+  homeSummaryStyle.textContent = UI_TEXT.profile.style;
+  startBtn.textContent = UI_TEXT.battle.startBtn;
+  profileBtn.textContent = UI_TEXT.battle.profileBtn;
+  document.querySelector('#input-row label').textContent = UI_TEXT.battle.inputLabel;
+  input.placeholder = UI_TEXT.battle.inputPlaceholder;
+  submitBtn.textContent = UI_TEXT.battle.attackBtn;
+}
+
 function renderAccountGate() {
   accountGateList.innerHTML = accountIndex.map((item) => `
     <div class="account-gate-item" data-account-id="${item.id}">
       <div class="account-gate-name">${escapeHtml(item.name)}</div>
-      <div class="account-gate-tag">${item.id === activeAccountId ? '当前账号' : '点击进入'}</div>
+      <div class="account-gate-tag">${item.id === activeAccountId ? UI_TEXT.accountGate.current : UI_TEXT.accountGate.enter}</div>
     </div>
   `).join('');
 }
@@ -1387,7 +1470,7 @@ function openAccountGate() {
   profileOverlay.classList.remove('show');
   submitBtn.disabled = true;
   input.disabled = true;
-  msgBar.textContent = '先选择一个本地账号，再开始修行。';
+  msgBar.textContent = UI_TEXT.accountGate.enterMsg;
   setTimeout(() => accountGateInput.focus(), 0);
 }
 
@@ -1419,7 +1502,7 @@ function createAccountFromGate() {
 function switchLocalAccount() {
   const current = getActiveAccount();
   const options = accountIndex.map((item, index) => `${index + 1}. ${item.name}`).join('\n');
-  const answer = window.prompt(`输入账号序号切换，或输入新账号名创建：\n${options}`, current.name);
+  const answer = window.prompt(`${UI_TEXT.accountGate.switchPrompt}\n${options}`, current.name);
   if (answer == null) return;
   const value = String(answer).trim();
   if (!value) return;
@@ -1447,7 +1530,7 @@ function switchLocalAccount() {
 
 function renameLocalAccount() {
   const current = getActiveAccount();
-  const answer = window.prompt('输入新的本地账号昵称', current.name);
+  const answer = window.prompt(UI_TEXT.accountGate.renamePrompt, current.name);
   if (answer == null) return;
   const name = String(answer).trim().slice(0, 24);
   if (!name) return;
@@ -2861,10 +2944,10 @@ function showResultOverlay(config) {
   const statsHtml = formatResultStats(config.stats);
   resultStats.innerHTML = statsHtml;
   resultStats.classList.toggle('hidden', !statsHtml);
-  resultWords.innerHTML = config.word ? formatWordReview(config.word, config.wordPrefix || '单词:') : '';
-  resultSub.textContent = config.subText || '是否继续闯关？';
-  resultContinue.textContent = config.continueText || '⚔ 继续闯关';
-  resultQuit.textContent = config.quitText || '🚪 退出';
+  resultWords.innerHTML = config.word ? formatWordReview(config.word, config.wordPrefix || UI_TEXT.result.wordPrefix) : '';
+  resultSub.textContent = config.subText || UI_TEXT.result.continuePrompt;
+  resultContinue.textContent = config.continueText || UI_TEXT.result.continueBtn;
+  resultQuit.textContent = config.quitText || UI_TEXT.result.quitBtn;
   resultOverlay.classList.add('show');
 
   // Show breakthrough / tribulation button if applicable
@@ -5666,6 +5749,7 @@ window.addEventListener('beforeunload', () => {
 (async () => {
   resizeStage();
   ensureAccountState();
+  applyStaticUIText();
   restoreSettingsFromStorage();
   ensureDailyState();
   renderDifficultyOptions();
