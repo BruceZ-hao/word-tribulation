@@ -983,27 +983,27 @@ const REALMS = [
   { name:'练气', title:'炼气化神', color:'#4fc3f7', darkColor:'#0288d1',
     hpBase:100, hpPerLvl:20, atkBase:10, atkPerLvl:2,
     enemyHP:3, bossHP:5, stoneCostBase:5, stoneCostInc:3,
-    bossName:'妖狼王', bossTitle:'练气·首领' },
+    bossName:'妖狼王', bossTitle:'练气 - 首领' },
   { name:'筑基', title:'筑基凝元', color:'#81c784', darkColor:'#388e3c',
     hpBase:300, hpPerLvl:30, atkBase:30, atkPerLvl:3,
     enemyHP:5, bossHP:8, stoneCostBase:12, stoneCostInc:5,
-    bossName:'散修盟主', bossTitle:'筑基·首领' },
+    bossName:'散修盟主', bossTitle:'筑基 - 首领' },
   { name:'金丹', title:'金丹大道', color:'#ffb74d', darkColor:'#f57c00',
     hpBase:800, hpPerLvl:80, atkBase:80, atkPerLvl:8,
     enemyHP:7, bossHP:11, stoneCostBase:35, stoneCostInc:10,
-    bossName:'魔修长老', bossTitle:'金丹·首领' },
+    bossName:'魔修长老', bossTitle:'金丹 - 首领' },
   { name:'元婴', title:'元婴出窍', color:'#e57373', darkColor:'#d32f2f',
     hpBase:2500, hpPerLvl:200, atkBase:200, atkPerLvl:20,
     enemyHP:10, bossHP:15, stoneCostBase:120, stoneCostInc:30,
-    bossName:'上古蛟龙', bossTitle:'元婴·首领' },
+    bossName:'上古蛟龙', bossTitle:'元婴 - 首领' },
   { name:'渡劫', title:'渡劫飞升', color:'#ba68c8', darkColor:'#7b1fa2',
     hpBase:8000, hpPerLvl:700, atkBase:600, atkPerLvl:90,
     enemyHP:14, bossHP:20, stoneCostBase:600, stoneCostInc:150,
-    bossName:'天魔将', bossTitle:'渡劫·首领' },
+    bossName:'天魔将', bossTitle:'渡劫 - 首领' },
   { name:'大乘', title:'大乘圆满', color:'#ffd700', darkColor:'#ff8f00',
     hpBase:25000, hpPerLvl:2000, atkBase:2500, atkPerLvl:200,
     enemyHP:18, bossHP:28, stoneCostBase:3500, stoneCostInc:1000,
-    bossName:'天帝', bossTitle:'大乘·终章' }
+    bossName:'天帝', bossTitle:'大乘 - 终章' }
 ];
 
 let activeWords = WORDS.map(pool => pool.map(word => ({ ...word })));
@@ -1302,7 +1302,7 @@ function getDictStorageKey() {
 
 function syncAccountPanel() {
   const account = getActiveAccount();
-  accountName.textContent = `本地账号 · ${account.name}`;
+  accountName.textContent = `本地账号 - ${account.name}`;
 }
 
 function switchLocalAccount() {
@@ -2164,7 +2164,7 @@ function renderAttributeGrid() {
         <div class="name">${attr.name}</div>
         <div class="desc">${attr.desc}</div>
       </div>
-      <div class="attr-value">Lv.${getAttributeBonus(attr.id)} · ${attr.label}</div>
+      <div class="attr-value">Lv.${getAttributeBonus(attr.id)} - ${attr.label}</div>
       <button class="attr-add" data-attr="${attr.id}" ${G.attributePoints <= 0 ? 'disabled' : ''}>+</button>
     </div>
   `).join('');
@@ -2297,7 +2297,7 @@ function renderDifficultyOptions() {
   difficultyOptions.innerHTML = DIFFICULTIES.map((item) => `
     <div class="difficulty-option ${item.id === G.difficulty ? 'active' : ''}" data-difficulty="${item.id}" style="${item.id === G.difficulty ? `border-color:${item.color}; box-shadow:0 0 0 1px ${item.glow} inset;` : ''}">
       <div class="name">${item.name}</div>
-      <div class="meta">限时 x${item.timerMul} · 奖励 x${item.rewardMul} · 惩罚 x${item.penaltyMul}</div>
+      <div class="meta">限时 x${item.timerMul} / 奖励 x${item.rewardMul} / 惩罚 x${item.penaltyMul}</div>
       <div class="meta">${item.desc}</div>
       <div class="risk" style="color:${item.color}">${item.risk}</div>
     </div>
@@ -2419,7 +2419,7 @@ function renderMistakeNotebook() {
           <div class="mistake-word">${escapeHtml(item.word.w)}</div>
           <div class="mistake-phonetic">音标：${escapeHtml(item.word.p || '-')}</div>
         </div>
-        <div class="mistake-count">×${item.wrongCount}</div>
+        <div class="mistake-count">x${item.wrongCount}</div>
       </div>
       <div class="mistake-meaning">中文释义：${escapeHtml(item.word.m)}</div>
       <div class="mistake-tags">
@@ -2804,7 +2804,7 @@ function syncProfilePanel() {
   }
   profileCard.classList.toggle('home-mode', G.onboarding);
   profileRealm.textContent = getRealm().name;
-  profileLevel.textContent = `${G.level} 层${G.isBoss ? ' · BOSS' : ''}`;
+  profileLevel.textContent = `${G.level} 层${G.isBoss ? ' - BOSS' : ''}`;
   profileStones.textContent = `${G.stones}`;
   profileKills.textContent = `${G.kills}`;
   profileHp.textContent = `${Math.max(0, Math.ceil(G.playerHP))} / ${G.playerMaxHP}`;
@@ -2817,7 +2817,7 @@ function syncProfilePanel() {
   profileDictionary.textContent = getDictionaryLabel();
   document.getElementById('profile-subtitle').textContent = G.onboarding
     ? `选择你的修途起点：皮肤、属性与难度会共同决定这次闯关体验。`
-    : `当前难度：${diff.name} · ${diff.desc} · 奖励 x${diff.rewardMul} / 惩罚 x${diff.penaltyMul}`;
+    : `当前难度：${diff.name} - ${diff.desc} - 奖励 x${diff.rewardMul} / 惩罚 x${diff.penaltyMul}`;
   profileChipRealm.textContent = `境界 ${getRealm().name}${G.level}层`;
   profileChipDifficulty.textContent = `难度 ${diff.name}`;
   profileResumeBtn.textContent = G.onboarding ? '▶ 开始挑战' : (G.mistakeDrill ? '▶ 返回试炼' : '▶ 返回战斗');
@@ -4195,13 +4195,13 @@ function drawUI() {
     let stageText = '';
     let stageColor = 'rgba(215,231,245,0.8)';
     if (G.heartDemonLocked) {
-      stageText = `心魔未平 · 还需稳固 ${Math.max(0, G.heartDemonRequiredWins - G.heartDemonClearedWins)} 场`;
+      stageText = `心魔未平 - 还需稳固 ${Math.max(0, G.heartDemonRequiredWins - G.heartDemonClearedWins)} 场`;
       stageColor = '#ffb3b3';
     } else if (G.tribulationUnlocked) {
-      stageText = '已获渡劫资格 · 可继续刷 BOSS 或前往个人中心渡劫';
+      stageText = '已获渡劫资格 - 可继续刷 BOSS 或前往个人中心渡劫';
       stageColor = '#ffd166';
     } else if (G.level >= 10) {
-      stageText = '已到瓶颈层 · 先击败当前 BOSS';
+      stageText = '已到瓶颈层 - 先击败当前 BOSS';
       stageColor = '#9be3ff';
     }
     if (stageText) {
