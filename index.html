@@ -781,18 +781,18 @@
                 <div class="lead" id="hero-preview-desc">选择你的修行皮相与属性加成，准备踏上第一段闯关修仙之路。</div>
               </div>
               <div id="hero-bonus-list">
-                <div class="hero-bonus"><div class="k">可分配属性点</div><div class="v" id="attr-points">0</div></div>
-                <div class="hero-bonus"><div class="k">当前皮肤</div><div class="v" id="hero-skin-name">布衣剑修</div></div>
-                <div class="hero-bonus"><div class="k">生命加成</div><div class="v" id="bonus-hp">+0%</div></div>
-                <div class="hero-bonus"><div class="k">灵石加成</div><div class="v" id="bonus-stones">+0%</div></div>
+                <div class="hero-bonus"><div class="k" id="label-alloc-points">可分配属性点</div><div class="v" id="attr-points">0</div></div>
+                <div class="hero-bonus"><div class="k" id="label-current-skin">当前皮肤</div><div class="v" id="hero-skin-name">布衣剑修</div></div>
+                <div class="hero-bonus"><div class="k" id="label-hp-bonus">生命加成</div><div class="v" id="bonus-hp">+0%</div></div>
+                <div class="hero-bonus"><div class="k" id="label-stone-bonus">灵石加成</div><div class="v" id="bonus-stones">+0%</div></div>
               </div>
               <div id="home-entry-actions">
                 <button id="begin-adventure-btn" type="button">开始挑战</button>
               </div>
               <div id="home-summary-strip">
-                <div class="summary-item"><div class="k">本次难度</div><div class="v" id="home-summary-difficulty">常规</div></div>
-                <div class="summary-item"><div class="k">预计路线</div><div class="v" id="home-summary-route">刷词 → BOSS → 渡劫</div></div>
-                <div class="summary-item"><div class="k">当前战斗风格</div><div class="v" id="home-summary-style">稳扎稳打</div></div>
+                <div class="summary-item"><div class="k" id="label-summary-difficulty">本次难度</div><div class="v" id="home-summary-difficulty">常规</div></div>
+                <div class="summary-item"><div class="k" id="label-summary-route">预计路线</div><div class="v" id="home-summary-route">刷词 → BOSS → 渡劫</div></div>
+                <div class="summary-item"><div class="k" id="label-summary-style">当前战斗风格</div><div class="v" id="home-summary-style">稳扎稳打</div></div>
               </div>
             </div>
           </div>
@@ -807,11 +807,11 @@
             </div>
           </div>
           <div class="profile-panel">
-            <div class="profile-panel-title">形象皮肤</div>
+            <div class="profile-panel-title" id="panel-skins-title">形象皮肤</div>
             <div id="skin-grid"></div>
           </div>
           <div class="profile-panel">
-            <div class="profile-panel-title">属性加点</div>
+            <div class="profile-panel-title" id="panel-attributes-title">属性加点</div>
             <div id="attribute-grid"></div>
           </div>
           <div id="profile-grid">
@@ -855,7 +855,7 @@
             <input type="file" id="dict-file-input" accept=".json,.csv" class="hidden">
           </div>
           <div class="profile-panel" id="daily-cultivation" data-side-group="progress">
-            <div class="profile-panel-title">每日修行</div>
+            <div class="profile-panel-title" id="panel-daily-title">每日修行</div>
             <div id="daily-summary">今日修行尚未开始，完成战斗或试炼后会在这里累计。</div>
             <div id="daily-grid">
               <div class="daily-item"><div class="k">连续修行</div><div class="v" id="daily-streak">0 天</div></div>
@@ -869,17 +869,17 @@
             </div>
           </div>
           <div class="profile-panel" id="achievement-panel" data-side-group="progress">
-            <div class="profile-panel-title">修行成就</div>
+            <div class="profile-panel-title" id="panel-achievement-title">修行成就</div>
             <div id="achievement-summary">累计修行里程碑会在这里解锁，达成后可领取一次性奖励。</div>
             <div id="achievement-list"></div>
           </div>
           <div class="profile-panel" id="tag-library" data-side-group="study">
-            <div class="profile-panel-title">词标签总览</div>
+            <div class="profile-panel-title" id="panel-tags-title">词标签总览</div>
             <div id="tag-library-summary">被标记的单词会集中显示在这里，可按标签快速发起练习。</div>
             <div id="tag-library-list"></div>
           </div>
           <div class="profile-panel" id="mistake-notebook" data-side-group="study">
-            <div class="profile-panel-title">错词复盘</div>
+            <div class="profile-panel-title" id="panel-mistakes-title">错词复盘</div>
             <div id="mistake-summary">尚未记录错词，答错或超时的单词会显示在这里。</div>
             <div id="mistake-list">
               <div class="mistake-empty">最近失误的单词会按重复次数和最近出现顺序保留，适合开战前快速复习。</div>
@@ -890,12 +890,12 @@
             </div>
           </div>
           <div class="profile-panel" id="profile-difficulty" data-side-group="system">
-            <div class="profile-panel-title">挑战难度</div>
+            <div class="profile-panel-title" id="panel-difficulty-title">挑战难度</div>
             <div class="diff-label">难度越高，奖励越好，但惩罚也越重</div>
             <div id="difficulty-options"></div>
           </div>
           <div class="profile-panel" data-side-group="system">
-            <div class="profile-panel-title">反馈设置</div>
+            <div class="profile-panel-title" id="panel-settings-title">反馈设置</div>
             <div id="profile-settings">
               <div class="setting-toggle">
                 <div class="meta">
@@ -970,7 +970,7 @@
             </div>
           </div>
           <div class="profile-panel" data-side-group="system">
-            <div class="profile-panel-title">操作</div>
+            <div class="profile-panel-title" id="panel-actions-title">操作</div>
             <div id="profile-actions">
               <button class="btn btn-continue" id="profile-resume-btn">▶ 返回战斗</button>
               <button class="btn" id="profile-breakthrough-btn">✨ 在此突破</button>
@@ -1112,6 +1112,26 @@ const UI_TEXT = {
     allocPoints:'可分配属性点',
     hpBonus:'生命加成',
     stoneBonus:'灵石加成',
+    summaryDifficulty:'本次难度',
+    summaryRoute:'预计路线',
+    summaryStyle:'当前战斗风格',
+    panels:{
+      skins:'形象皮肤',
+      attributes:'属性加点',
+      daily:'每日修行',
+      achievement:'修行成就',
+      tags:'词标签总览',
+      mistakes:'错词复盘',
+      difficulty:'挑战难度',
+      settings:'反馈设置',
+      actions:'操作',
+    },
+    buttons:{
+      resume:'▶ 返回战斗',
+      restart:'🔄 重新开始',
+      export:'💾 导出存档',
+      import:'📥 导入存档',
+    },
   },
   battle:{
     inputLabel:'⌨ 输入:',
@@ -1440,8 +1460,28 @@ function applyStaticUIText() {
   switchAccountBtn.textContent = UI_TEXT.profile.switchAccount;
   renameAccountBtn.textContent = UI_TEXT.profile.renameAccount;
   beginAdventureBtn.textContent = UI_TEXT.profile.startAdventure;
+  document.getElementById('label-alloc-points').textContent = UI_TEXT.profile.allocPoints;
+  document.getElementById('label-current-skin').textContent = UI_TEXT.profile.currentSkin;
+  document.getElementById('label-hp-bonus').textContent = UI_TEXT.profile.hpBonus;
+  document.getElementById('label-stone-bonus').textContent = UI_TEXT.profile.stoneBonus;
+  document.getElementById('label-summary-difficulty').textContent = UI_TEXT.profile.summaryDifficulty;
+  document.getElementById('label-summary-route').textContent = UI_TEXT.profile.summaryRoute;
+  document.getElementById('label-summary-style').textContent = UI_TEXT.profile.summaryStyle;
   homeSummaryRoute.textContent = UI_TEXT.profile.route;
   homeSummaryStyle.textContent = UI_TEXT.profile.style;
+  document.getElementById('panel-skins-title').textContent = UI_TEXT.profile.panels.skins;
+  document.getElementById('panel-attributes-title').textContent = UI_TEXT.profile.panels.attributes;
+  document.getElementById('panel-daily-title').textContent = UI_TEXT.profile.panels.daily;
+  document.getElementById('panel-achievement-title').textContent = UI_TEXT.profile.panels.achievement;
+  document.getElementById('panel-tags-title').textContent = UI_TEXT.profile.panels.tags;
+  document.getElementById('panel-mistakes-title').textContent = UI_TEXT.profile.panels.mistakes;
+  document.getElementById('panel-difficulty-title').textContent = UI_TEXT.profile.panels.difficulty;
+  document.getElementById('panel-settings-title').textContent = UI_TEXT.profile.panels.settings;
+  document.getElementById('panel-actions-title').textContent = UI_TEXT.profile.panels.actions;
+  profileResumeBtn.textContent = UI_TEXT.profile.buttons.resume;
+  profileRestartBtn.textContent = UI_TEXT.profile.buttons.restart;
+  exportSaveBtn.textContent = UI_TEXT.profile.buttons.export;
+  importSaveBtn.textContent = UI_TEXT.profile.buttons.import;
   startBtn.textContent = UI_TEXT.battle.startBtn;
   profileBtn.textContent = UI_TEXT.battle.profileBtn;
   document.querySelector('#input-row label').textContent = UI_TEXT.battle.inputLabel;
