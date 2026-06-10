@@ -815,13 +815,13 @@
             <div id="attribute-grid"></div>
           </div>
           <div id="profile-grid">
-            <div class="profile-stat"><div class="k">当前境界</div><div class="v" id="profile-realm">-</div></div>
-            <div class="profile-stat"><div class="k">当前层数</div><div class="v" id="profile-level">-</div></div>
-            <div class="profile-stat"><div class="k">灵石</div><div class="v" id="profile-stones">-</div></div>
-            <div class="profile-stat"><div class="k">总击杀</div><div class="v" id="profile-kills">-</div></div>
-            <div class="profile-stat"><div class="k">生命</div><div class="v" id="profile-hp">-</div></div>
-            <div class="profile-stat"><div class="k">突破花费</div><div class="v" id="profile-breakthrough">-</div></div>
-            <div class="profile-stat"><div class="k">心魔状态</div><div class="v" id="profile-heartdemon">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-realm">当前境界</div><div class="v" id="profile-realm">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-level">当前层数</div><div class="v" id="profile-level">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-stones">灵石</div><div class="v" id="profile-stones">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-kills">总击杀</div><div class="v" id="profile-kills">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-hp">生命</div><div class="v" id="profile-hp">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-breakthrough">突破花费</div><div class="v" id="profile-breakthrough">-</div></div>
+            <div class="profile-stat"><div class="k" id="label-profile-heartdemon">心魔状态</div><div class="v" id="profile-heartdemon">-</div></div>
           </div>
         </div>
         <div id="profile-side">
@@ -831,7 +831,7 @@
             <button class="side-tab" type="button" data-side-tab="system">系统</button>
           </div>
           <div class="profile-panel" id="profile-stage">
-            <div class="profile-panel-title">当前阶段</div>
+            <div class="profile-panel-title" id="panel-stage-title">当前阶段</div>
             <div id="profile-stage-badge">修途状态</div>
             <div id="profile-stage-text">-</div>
             <div class="profile-progress">
@@ -845,8 +845,8 @@
             </div>
           </div>
           <div class="profile-panel" id="profile-dict" data-side-group="study">
-            <div class="profile-panel-title">词库</div>
-            <div>当前词库：<span id="profile-dictionary">-</span></div>
+            <div class="profile-panel-title" id="panel-dict-title">词库</div>
+            <div><span id="label-profile-dictionary">当前词库：</span><span id="profile-dictionary">-</span></div>
             <div id="dict-status">当前词库：基础内置词库</div>
             <div class="dict-tools">
               <button class="btn" id="import-dict-btn" type="button">导入 ECDICT 词库</button>
@@ -858,10 +858,10 @@
             <div class="profile-panel-title" id="panel-daily-title">每日修行</div>
             <div id="daily-summary">今日修行尚未开始，完成战斗或试炼后会在这里累计。</div>
             <div id="daily-grid">
-              <div class="daily-item"><div class="k">连续修行</div><div class="v" id="daily-streak">0 天</div></div>
-              <div class="daily-item"><div class="k">今日击杀</div><div class="v" id="daily-kills">0</div></div>
-              <div class="daily-item"><div class="k">今日练会</div><div class="v" id="daily-clears">0</div></div>
-              <div class="daily-item"><div class="k">今日试炼</div><div class="v" id="daily-drills">0</div></div>
+              <div class="daily-item"><div class="k" id="label-daily-streak">连续修行</div><div class="v" id="daily-streak">0 天</div></div>
+              <div class="daily-item"><div class="k" id="label-daily-kills">今日击杀</div><div class="v" id="daily-kills">0</div></div>
+              <div class="daily-item"><div class="k" id="label-daily-clears">今日练会</div><div class="v" id="daily-clears">0</div></div>
+              <div class="daily-item"><div class="k" id="label-daily-drills">今日试炼</div><div class="v" id="daily-drills">0</div></div>
             </div>
             <div id="daily-tasks"></div>
             <div class="dict-tools">
@@ -1116,6 +1116,8 @@ const UI_TEXT = {
     summaryRoute:'预计路线',
     summaryStyle:'当前战斗风格',
     panels:{
+      stage:'当前阶段',
+      dict:'词库',
       skins:'形象皮肤',
       attributes:'属性加点',
       daily:'每日修行',
@@ -1131,6 +1133,26 @@ const UI_TEXT = {
       restart:'🔄 重新开始',
       export:'💾 导出存档',
       import:'📥 导入存档',
+      breakthrough:'✨ 在此突破',
+      claimDaily:'领取今日修行奖励',
+      startMistakeDrill:'开始错词试炼',
+      clearMistakes:'清空错词本',
+      importDict:'导入 ECDICT 词库',
+      resetDict:'恢复默认词库',
+    },
+    labels:{
+      realm:'当前境界',
+      level:'当前层数',
+      stones:'灵石',
+      kills:'总击杀',
+      hp:'生命',
+      breakthrough:'突破花费',
+      heartdemon:'心魔状态',
+      profileDictionary:'当前词库：',
+      dailyStreak:'连续修行',
+      dailyKills:'今日击杀',
+      dailyClears:'今日练会',
+      dailyDrills:'今日试炼',
     },
     dailySummaryEmpty:'今日修行尚未开始，完成战斗或试炼后会在这里累计。',
     dailySummaryClaimed:'今日三项目标已结算。继续修行可累积记录，明日会刷新新的日课。',
@@ -1478,6 +1500,8 @@ function applyStaticUIText() {
   homeSummaryStyle.textContent = UI_TEXT.profile.style;
   document.getElementById('panel-skins-title').textContent = UI_TEXT.profile.panels.skins;
   document.getElementById('panel-attributes-title').textContent = UI_TEXT.profile.panels.attributes;
+  document.getElementById('panel-stage-title').textContent = UI_TEXT.profile.panels.stage;
+  document.getElementById('panel-dict-title').textContent = UI_TEXT.profile.panels.dict;
   document.getElementById('panel-daily-title').textContent = UI_TEXT.profile.panels.daily;
   document.getElementById('panel-achievement-title').textContent = UI_TEXT.profile.panels.achievement;
   document.getElementById('panel-tags-title').textContent = UI_TEXT.profile.panels.tags;
@@ -1489,6 +1513,24 @@ function applyStaticUIText() {
   profileRestartBtn.textContent = UI_TEXT.profile.buttons.restart;
   exportSaveBtn.textContent = UI_TEXT.profile.buttons.export;
   importSaveBtn.textContent = UI_TEXT.profile.buttons.import;
+  profileBreakthroughBtn.textContent = UI_TEXT.profile.buttons.breakthrough;
+  claimDailyBtn.textContent = UI_TEXT.profile.buttons.claimDaily;
+  startMistakeDrillBtn.textContent = UI_TEXT.profile.buttons.startMistakeDrill;
+  clearMistakesBtn.textContent = UI_TEXT.profile.buttons.clearMistakes;
+  importDictBtn.textContent = UI_TEXT.profile.buttons.importDict;
+  resetDictBtn.textContent = UI_TEXT.profile.buttons.resetDict;
+  document.getElementById('label-profile-realm').textContent = UI_TEXT.profile.labels.realm;
+  document.getElementById('label-profile-level').textContent = UI_TEXT.profile.labels.level;
+  document.getElementById('label-profile-stones').textContent = UI_TEXT.profile.labels.stones;
+  document.getElementById('label-profile-kills').textContent = UI_TEXT.profile.labels.kills;
+  document.getElementById('label-profile-hp').textContent = UI_TEXT.profile.labels.hp;
+  document.getElementById('label-profile-breakthrough').textContent = UI_TEXT.profile.labels.breakthrough;
+  document.getElementById('label-profile-heartdemon').textContent = UI_TEXT.profile.labels.heartdemon;
+  document.getElementById('label-profile-dictionary').textContent = UI_TEXT.profile.labels.profileDictionary;
+  document.getElementById('label-daily-streak').textContent = UI_TEXT.profile.labels.dailyStreak;
+  document.getElementById('label-daily-kills').textContent = UI_TEXT.profile.labels.dailyKills;
+  document.getElementById('label-daily-clears').textContent = UI_TEXT.profile.labels.dailyClears;
+  document.getElementById('label-daily-drills').textContent = UI_TEXT.profile.labels.dailyDrills;
   dailySummary.textContent = UI_TEXT.profile.dailySummaryEmpty;
   achievementSummary.textContent = UI_TEXT.profile.achievementSummary;
   tagLibrarySummary.textContent = UI_TEXT.profile.tagSummaryEmpty;
