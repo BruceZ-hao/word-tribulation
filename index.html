@@ -1132,6 +1132,13 @@ const UI_TEXT = {
       export:'💾 导出存档',
       import:'📥 导入存档',
     },
+    dailySummaryEmpty:'今日修行尚未开始，完成战斗或试炼后会在这里累计。',
+    dailySummaryClaimed:'今日三项目标已结算。继续修行可累积记录，明日会刷新新的日课。',
+    dailySummaryReady:'今日三项目标已达成，可以领取每日修行奖励。',
+    achievementSummary:'累计修行里程碑会在这里解锁，达成后可领取一次性奖励。',
+    tagSummaryEmpty:'被标记的单词会集中显示在这里，可按标签快速发起练习。',
+    mistakeSummaryEmpty:'尚未记录错词，答错或超时的单词会显示在这里。',
+    mistakeListEmpty:'最近失误的单词会按重复次数和最近出现顺序保留，适合开战前快速复习。',
   },
   battle:{
     inputLabel:'⌨ 输入:',
@@ -1482,6 +1489,13 @@ function applyStaticUIText() {
   profileRestartBtn.textContent = UI_TEXT.profile.buttons.restart;
   exportSaveBtn.textContent = UI_TEXT.profile.buttons.export;
   importSaveBtn.textContent = UI_TEXT.profile.buttons.import;
+  dailySummary.textContent = UI_TEXT.profile.dailySummaryEmpty;
+  achievementSummary.textContent = UI_TEXT.profile.achievementSummary;
+  tagLibrarySummary.textContent = UI_TEXT.profile.tagSummaryEmpty;
+  mistakeSummary.textContent = UI_TEXT.profile.mistakeSummaryEmpty;
+  if (!mistakeList.children.length) {
+    mistakeList.innerHTML = `<div class="mistake-empty">${UI_TEXT.profile.mistakeListEmpty}</div>`;
+  }
   startBtn.textContent = UI_TEXT.battle.startBtn;
   profileBtn.textContent = UI_TEXT.battle.profileBtn;
   document.querySelector('#input-row label').textContent = UI_TEXT.battle.inputLabel;
@@ -2638,8 +2652,8 @@ function formatRelativeTime(ts) {
 
 function renderMistakeNotebook() {
   if (!G.mistakes.length) {
-    mistakeSummary.textContent = '尚未记录错词，答错或超时的单词会显示在这里。';
-    mistakeList.innerHTML = '<div class="mistake-empty">最近失误的单词会按重复次数和最近出现顺序保留，适合开战前快速复习。</div>';
+    mistakeSummary.textContent = UI_TEXT.profile.mistakeSummaryEmpty;
+    mistakeList.innerHTML = `<div class="mistake-empty">${UI_TEXT.profile.mistakeListEmpty}</div>`;
     return;
   }
 
@@ -2682,9 +2696,9 @@ function renderDailyCultivation() {
   dailyClears.textContent = `${G.daily.clears}`;
   dailyDrills.textContent = `${G.daily.drills}`;
   dailySummary.textContent = G.daily.claimed
-    ? `今日三项目标已结算。继续修行可累积记录，明日会刷新新的日课。`
+    ? UI_TEXT.profile.dailySummaryClaimed
     : allDone
-      ? '今日三项目标已达成，可以领取每日修行奖励。'
+      ? UI_TEXT.profile.dailySummaryReady
       : `今日已击杀 ${G.daily.kills} 个敌人，练会 ${G.daily.clears} 个错词，完成 ${G.daily.drills} 次试炼结算。`;
   dailyTasks.innerHTML = taskStatus.map((task) => `
     <div class="daily-task ${task.done ? 'done' : ''}">
@@ -2767,7 +2781,7 @@ function renderTagLibrary() {
     .sort((a, b) => a.word.localeCompare(b.word));
 
   if (!entries.length) {
-    tagLibrarySummary.textContent = '暂未标记任何词。可在结算弹层里给单词打收藏、已掌握或需重练标签。';
+    tagLibrarySummary.textContent = UI_TEXT.profile.tagSummaryEmpty;
     tagLibraryList.innerHTML = '<div class="mistake-empty">标记后的单词会集中显示在这里，并支持按标签快速练习。</div>';
     return;
   }
